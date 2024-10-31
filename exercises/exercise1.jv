@@ -1,0 +1,49 @@
+// Exercise 1: Airports Data Pipeline
+// Goal:
+// - Download airport data from a CSV on the web
+// - Exclude specific columns and load the remaining data into SQLite
+
+pipeline AirportsPipeline {
+
+  // Define the flow of data through connected blocks
+  AirportsExtractor
+    -> AirportsTextFileInterpreter
+    -> AirportsCSVInterpreter
+    -> AirportsTableInterpreter
+    -> AirportsLoader;
+
+  // Block to download the CSV file from the web
+  block AirportsExtractor oftype HttpExtractor {
+    url: "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
+  }
+
+  // Block to interpret the downloaded file as a text file
+  block AirportsTextFileInterpreter oftype TextFileInterpreter { }
+
+  // Block to interpret the text file as CSV with a semicolon delimiter
+  block AirportsCSVInterpreter oftype CSVInterpreter {
+    delimiter: ";";
+    
+  }
+
+  // Block to structure the data as a table, excluding unnecessary columns
+  block AirportsTableInterpreter oftype TableInterpreter {
+    columns: [
+      "Flughafen_ID" oftype integer,
+      "Name" oftype text,
+      "Stadt" oftype text,
+      "Land" oftype text,
+      "IATA" oftype text,
+      "ICAO" oftype text,
+      "Breitengrad" oftype decimal,
+      "Laengengrad" oftype decimal,
+      "Hoehe" oftype integer
+    ];
+  }
+
+  // Block to load the interpreted table into an SQLite database
+  block AirportsLoader oftype SQLiteLoader {
+    table: "airports";
+    file: "./airports.sqlite";
+  }
+}
