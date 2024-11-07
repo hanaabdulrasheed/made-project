@@ -27,12 +27,11 @@ The U.S. Census Bureau provides socio-economic data that includes income levels,
 
 ## Work Packages
 
-1. Data Acquisition [#1](link-to-your-issue-1)
-2. Data Cleaning and Preparation [#2](link-to-your-issue-2)
-3. Data Analysis [#3](link-to-your-issue-3)
-4. Report Creation [#4](link-to-your-issue-4)
+1. Data Acquisition [#1](https://github.com/hanaabdulrasheed/made-project/issues/1)
+2. Data Cleaning and Preparation [#2](https://github.com/hanaabdulrasheed/made-project/issues/2)
+3. Data Analysis [#3](https://github.com/hanaabdulrasheed/made-project/issues/3)
 
-[1]: https://github.com/jvalue/made-template/issues/1
-[2]: https://github.com/jvalue/made-template/issues/2
-[3]: https://github.com/jvalue/made-template/issues/3
-[4]: https://github.com/jvalue/made-template/issues/4
+
+[1]: [https://github.com/hanaabdulrasheed/made-project/issues/1]
+[2]: [https://github.com/hanaabdulrasheed/made-project/issues/2]
+[3]: [https://github.com/hanaabdulrasheed/made-project/issues/3]
