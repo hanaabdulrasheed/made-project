@@ -1,0 +1,83 @@
+pipeline CountryStatsPipeline {
+
+    CountryStatsExtractor
+
+        -> CountryStatsCellRangeSelector
+        -> RenameISO3Writer
+        -> RenameGDPWriter
+        -> RenameBondWriter
+        -> CountryStatsTableInterpreter
+        -> BondIssuanceLoader
+        -> GDPPerCapitaLoader;
+
+    block CountryStatsExtractor oftype HttpExtractor {
+        url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+    }
+
+
+    block CountryStatsCellRangeSelector oftype CellRangeSelector {
+        select: range P2:S45;
+    }
+
+    block RenameISO3Writer oftype CellWriter {
+        at: cell P2;
+        write: ["Country Code"];
+    }
+
+    block RenameGDPWriter oftype CellWriter {
+        at: cell R2;
+        write: ["GDP per Capita"];
+    }
+
+    block RenameBondWriter oftype CellWriter {
+        at: cell S2;
+        write: ["Bond Issuance Share"];
+    }
+
+    block CountryStatsTableInterpreter oftype TableInterpreter {
+        columns: [
+            "Country Code" oftype ISOAlpha3,
+            "Economy" oftype text,
+            "GDP per Capita" oftype GDPPerCapitaConstraint,
+            "Bond Issuance Share" oftype BondIssuanceConstraint
+        ];
+    }
+
+    block BondIssuanceLoader oftype SQLiteLoader {
+        table: "bondIssuance";
+        file: "./country-stats.sqlite";
+        columns: ["Country Code", "Bond Issuance Share"];
+    }
+
+    block GDPPerCapitaLoader oftype SQLiteLoader {
+        table: "gdpPerCapita";
+        file: "./country-stats.sqlite";
+        columns: ["Country Code", "GDP per Capita"];
+    }
+}
+
+publish constraint ISOAlpha3Constraint oftype RegexConstraint {
+    regex: /^[A-Z]{3}$/;
+}
+
+valuetype ISOAlpha3 oftype text {
+    constraints: [ISOAlpha3Constraint];
+}
+
+publish constraint GDPPerCapitaConstraint oftype RangeConstraint {
+    lowerBound: 0;
+    upperBound: 9007199254740991;
+}
+
+valuetype GDPPerCapitaConstraint oftype decimal {
+    constraints: [GDPPerCapitaConstraint];
+}
+
+publish constraint BondIssuanceConstraint oftype RangeConstraint {
+    lowerBound: 0;
+    upperBound: 1;
+}
+
+valuetype BondIssuanceConstraint oftype decimal {
+    constraints: [BondIssuanceConstraint];
+}
